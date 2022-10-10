@@ -1,0 +1,27 @@
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+.idea
+
+#Hardhat files
+cache
+artifacts
+
+# dependencies
+/node_modules
+typechain
+typechain-types
+
+# testing
+/coverage
+coverage.json
+
+# production
+/build
+
+# misc
+.DS_Store
+.env
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
