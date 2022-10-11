@@ -6,7 +6,7 @@ const tokens = (n) => {
 }
 
 describe('MyDai token contract', () => {
-  let myDaiToken
+  let token
 
   const name = "Colin's Stable Coin"
   const symbol = 'myDai'
@@ -14,38 +14,90 @@ describe('MyDai token contract', () => {
 
   let accounts
   let deployer
+  let sender
+  let recipient
 
   beforeEach(async () => {
-    const MyDaiToken = await ethers.getContractFactory('Token')
+    const Token = await ethers.getContractFactory('Token')
 
-    myDaiToken = await MyDaiToken.deploy(name, symbol, totalSupply)
+    token = await Token.deploy(name, symbol, totalSupply)
 
     accounts = await ethers.getSigners()
     deployer = accounts[0]
+    sender   = deployer
+    recipient = accounts[1]
   })
 
   describe('Deployment', () => {
 
     it('has correct name', async () => {
-      expect(await myDaiToken.name()).to.equal(name)
+      expect(await token.name()).to.equal(name)
     })
 
     it('has correct symbol', async () => {
-      expect(await myDaiToken.symbol()).to.equal(symbol)
+      expect(await token.symbol()).to.equal(symbol)
     })
 
     it('has correct decimals', async () => {
-      expect(await myDaiToken.decimals()).to.equal(18)
+      expect(await token.decimals()).to.equal(18)
     })
 
     it('has correct total supply', async () => {
-      expect(await myDaiToken.totalSupply()).to.equal(totalSupply)
+      expect(await token.totalSupply()).to.equal(totalSupply)
     })
 
     it('has assigned all tokens to deployer', async () => {
-      expect(await myDaiToken.totalSupply()).to.equal(await myDaiToken.balanceOf(deployer.address))
+      expect(await token.totalSupply()).to.equal(await token.balanceOf(deployer.address))
     })
   })
 
+  describe('Token Transfer', () => {
+    let amount,
+        initial_balance,
+        transaction,
+        result
 
+    describe('Success', () => {
+      beforeEach(async () => {
+        amount = tokens(100)
+
+        initial_balance = await token.balanceOf(sender.address)
+
+        transaction = await token.connect(sender).transfer(recipient.address, amount)
+        result = await transaction.wait()
+      })
+
+      it('results in correct balances', async () => {
+        //expect(result).to.equal('ok')
+
+        expect(await token.balanceOf(sender.address)).to.equal(initial_balance.sub(amount))
+        expect(await token.balanceOf(recipient.address)).to.equal(amount)
+      })
+
+      it ('emits a transfer event', async () => {
+        const event = result.events[0]
+        expect(event.event).to.equal('Transfer')
+
+        const args = event.args
+        expect(args._from).to.equal(sender.address)
+        expect(args._to).to.equal(recipient.address)
+        expect(args._value).to.equal(amount)
+      })
+    })
+
+    describe('Failure', () => {
+      it('results from sender not having a sufficient balance', async () => {
+        initial_balance = await token.balanceOf(sender.address)
+
+        amount = initial_balance + tokens(1)
+
+        await expect(token.connect(sender).transfer(recipient.address, amount)).to.be.reverted
+      })
+
+      it('results from and invalid recipient', async () => {
+        amount = tokens(1)
+        await expect(token.connect(sender).transfer('0x0000000000000000000000000000000000000000', amount)).to.be.reverted
+      })
+    })
+  })
 })

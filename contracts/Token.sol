@@ -9,8 +9,13 @@ contract Token {
     uint8 public decimals;
     uint256 public totalSupply;
 
-    // TODO function balanceOf(address _owner) public view returns (uint256 balance)
     mapping(address => uint256) public balanceOf;
+
+    event Transfer(
+        address indexed _from,
+        address indexed _to,
+        uint256 _value
+    );
 
     constructor(string memory _name, string memory _symbol, uint256 _totalSupply) {
         name = _name;
@@ -19,7 +24,24 @@ contract Token {
         balanceOf[msg.sender] = totalSupply = _totalSupply;
     }
 
-    // TODO function transfer(address _to, uint256 _value) public returns (bool success)
+    function transfer(address _to, uint256 _value) public returns (bool success) {
+        // The function SHOULD throw if the message caller’s account balance
+        // does not have enough tokens to spend.
+        require(balanceOf[msg.sender] >= _value);
+
+        require(_to != address(0));
+
+        balanceOf[msg.sender] -= _value;
+
+        balanceOf[_to] += _value;
+
+        // and MUST fire the Transfer event.
+        emit Transfer(msg.sender, _to, _value);
+
+        return true;
+    }
+
+
     // TODO function transferFrom(address _from, address _to, uint256 _value) public returns (bool success)
     // TODO function approve(address _spender, uint256 _value) public returns (bool success)
     // TODO function allowance(address _owner, address _spender) public view returns (uint256 remaining)
