@@ -12,10 +12,16 @@ describe('MyDai token contract', () => {
   const symbol = 'myDai'
   const totalSupply = tokens(1000000)
 
+  let accounts
+  let deployer
+
   beforeEach(async () => {
     const MyDaiToken = await ethers.getContractFactory('Token')
 
     myDaiToken = await MyDaiToken.deploy(name, symbol, totalSupply)
+
+    accounts = await ethers.getSigners()
+    deployer = accounts[0]
   })
 
   describe('Deployment', () => {
@@ -34,6 +40,10 @@ describe('MyDai token contract', () => {
 
     it('has correct total supply', async () => {
       expect(await myDaiToken.totalSupply()).to.equal(totalSupply)
+    })
+
+    it('has assigned all tokens to deployer', async () => {
+      expect(await myDaiToken.totalSupply()).to.equal(await myDaiToken.balanceOf(deployer.address))
     })
   })
 
