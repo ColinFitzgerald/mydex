@@ -9,6 +9,12 @@ build:
 test:
 	@npx hardhat test
 
+test-exchange:
+	@npx hardhat test ./test/Exchange.js
+
+test-token:
+	@npx hardhat test ./test/Token.js
+
 run:
 	@npx hardhat node
 
