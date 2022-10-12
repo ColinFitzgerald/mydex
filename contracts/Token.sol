@@ -12,11 +12,7 @@ contract Token {
     mapping(address => uint256) public balanceOf;
     mapping(address => mapping(address => uint256)) public allowance;
 
-    event Transfer(
-        address indexed _from,
-        address indexed _to,
-        uint256 _value
-    );
+    event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
     event Approval(
         address indexed _owner,
@@ -24,7 +20,11 @@ contract Token {
         uint256 _value
     );
 
-    constructor(string memory _name, string memory _symbol, uint256 _totalSupply) {
+    constructor(
+        string memory _name,
+        string memory _symbol,
+        uint256 _totalSupply
+    ) {
         name = _name;
         symbol = _symbol;
         decimals = 18;
@@ -33,7 +33,11 @@ contract Token {
         emit Transfer(address(0), msg.sender, totalSupply);
     }
 
-    function _transfer(address _from, address _to, uint256 _value) internal returns (bool success) {
+    function _transfer(
+        address _from,
+        address _to,
+        uint256 _value
+    ) internal returns (bool success) {
         // The function SHOULD throw if the message caller’s account balance
         // does not have enough tokens to spend.
         require(balanceOf[_from] >= _value);
@@ -50,11 +54,18 @@ contract Token {
         return true;
     }
 
-    function transfer(address _to, uint256 _value) public returns (bool success) {
+    function transfer(address _to, uint256 _value)
+        public
+        returns (bool success)
+    {
         return _transfer(msg.sender, _to, _value);
     }
 
-    function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
+    function transferFrom(
+        address _from,
+        address _to,
+        uint256 _value
+    ) public returns (bool success) {
         require(_value <= allowance[_from][msg.sender]);
 
         require(_transfer(_from, _to, _value) == true);
@@ -64,7 +75,10 @@ contract Token {
         return true;
     }
 
-    function approve(address _spender, uint256 _value) public returns (bool success) {
+    function approve(address _spender, uint256 _value)
+        public
+        returns (bool success)
+    {
         require(_spender != address(0));
 
         allowance[msg.sender][_spender] = _value;
@@ -73,5 +87,4 @@ contract Token {
 
         return true;
     }
-
 }

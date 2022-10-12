@@ -3,6 +3,12 @@
 install:
 	@npm install
 
+lint:
+	@npm run solhint
+
+format:
+	@npm run prettier:solidity
+
 build:
 	@npx hardhat compile
 
