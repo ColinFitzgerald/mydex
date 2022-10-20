@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.0 .0;
 
 import "hardhat/console.sol";
 
@@ -24,7 +24,7 @@ contract Token {
         string memory _name,
         string memory _symbol,
         uint256 _totalSupply
-    ) {
+    ) public {
         name = _name;
         symbol = _symbol;
         decimals = 18;
@@ -40,9 +40,9 @@ contract Token {
     ) internal returns (bool success) {
         // The function SHOULD throw if the message caller’s account balance
         // does not have enough tokens to spend.
-        require(balanceOf[_from] >= _value);
+        require(balanceOf[_from] >= _value, "Insufficient balance");
 
-        require(_to != address(0));
+        require(_to != address(0), "Cannot transfer to null address");
 
         balanceOf[_from] -= _value;
 
@@ -66,9 +66,9 @@ contract Token {
         address _to,
         uint256 _value
     ) public returns (bool success) {
-        require(_value <= allowance[_from][msg.sender]);
+        require(_value <= allowance[_from][msg.sender], "Insufficient balance");
 
-        require(_transfer(_from, _to, _value) == true);
+        require(_transfer(_from, _to, _value) == true, "Token transfer failed");
 
         allowance[_from][msg.sender] -= _value;
 
@@ -79,7 +79,7 @@ contract Token {
         public
         returns (bool success)
     {
-        require(_spender != address(0));
+        require(_spender != address(0), "Cannot approve the null address");
 
         allowance[msg.sender][_spender] = _value;
 
