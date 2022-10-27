@@ -18,9 +18,8 @@ function App() {
         const { chainId } = await provider.getNetwork()
         console.log(chainId)
 
-        console.log(config[chainId].myDai.address)
         // Create a token contract to interact with.
-        const token = new ethers.Contract('0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0', TOKEN_ABI, provider)
+        const token = new ethers.Contract(config[chainId].myDai.address, TOKEN_ABI, provider)
         console.log(token.address)
         const symbol = await token.symbol()
         console.log(symbol)
