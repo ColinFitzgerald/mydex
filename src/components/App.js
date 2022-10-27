@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import '../App.css';
 import { ethers } from 'ethers';
 import TOKEN_ABI from '../abis/Token.json';
 import EXCHANGE_ABI from '../abis/Exchange.json';
