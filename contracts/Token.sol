@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.0 .0;
+pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
 
@@ -24,7 +24,7 @@ contract Token {
         string memory _name,
         string memory _symbol,
         uint256 _totalSupply
-    ) public {
+    ) {
         name = _name;
         symbol = _symbol;
         decimals = 18;
