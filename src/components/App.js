@@ -1,34 +1,64 @@
-import React, { useEffect } from 'react';
-import { ethers } from 'ethers';
-import TOKEN_ABI from '../abis/Token.json';
-import EXCHANGE_ABI from '../abis/Exchange.json';
-import config from '../config.json'
+/**
+ * @file This file contains the main entry point for our React web application.
+ * @author Colin Fitzgerald (@link https://colinfitzgerald.eth/)
+ *
+ * See @link https://reactjs.org/ for more details and documentation.
+ */
 
+// Third party imports.
+import React, {useEffect} from 'react'
+import {useDispatch} from 'react-redux'
 
-function App() {
+// Local application imports.
+import {
+    loadProvider,
+    loadNetwork,
+    loadAccount,
+    loadToken
+} from '../store/interactions'
+// import store from "../store/store";
 
+/**
+ * This is our main web application.
+ *
+ * @returns {JSX.Element}
+ * @constructor
+ */
+export default function App() {
+    // Create a dispatch callback that we will use to store things in our
+    // applications Redux state store.
+    const dispatch = useDispatch()
+
+    /**
+     * This method will load all the necessary Web3 objects and information
+     * needed by our application.
+     *
+     * @returns {Promise<void>}
+     */
     const loadBlockchainData = async () => {
         // Get account(s) from the browser wallet.
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts'})
-        console.log(accounts[0])
+        await loadAccount(dispatch)
 
-        // Connect to the blockchain via the browser wallet.
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const { chainId } = await provider.getNetwork()
-        console.log(chainId)
+        // Get a Web3 provider (connection).
+        const provider = loadProvider(dispatch)
+
+        // Get the chain ID of the connected network.
+        const chainId = await loadNetwork(dispatch, provider)
 
         // Create a token contract to interact with.
-        const token = new ethers.Contract(config[chainId].myDai.address, TOKEN_ABI, provider)
-        console.log(token.address)
-        const symbol = await token.symbol()
-        console.log(symbol)
+        await loadToken(dispatch, provider, chainId)
     }
 
+    /**
+     * This method will be called when our application is loaded.
+     *
+     * See https://reactjs.org/docs/hooks-effect.html
+     */
     useEffect(() => {
-        loadBlockchainData()
-
+        void loadBlockchainData()
     })
 
+    // Here we create and return the actual HTML for our web application.
     return (
         <div>
 
@@ -62,5 +92,3 @@ function App() {
         </div>
     );
 }
-
-export default App;
