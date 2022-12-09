@@ -13,12 +13,11 @@ import {useDispatch} from 'react-redux'
 import {
     loadProvider,
     loadNetwork,
-    loadAccount,
     loadTokens,
-    loadExchange
+    loadExchange, loadAccount
 } from '../store/interactions'
 import config from "../config.json";
-// import store from "../store/store";
+import Navbar from "./Navbar";
 
 /**
  * This is our main web application.
@@ -44,8 +43,14 @@ export default function App() {
         // Get the chain ID of the connected network.
         const chainId = await loadNetwork(dispatch, provider)
 
-        // Get account(s) from the browser wallet.
-        await loadAccount(dispatch, provider)
+        window["ethereum"].on('chainChanged', () => {
+            window.location.reload()
+        })
+
+        window["ethereum"].on('accountsChanged', () => {
+            // Get account(s) and balance from the browser wallet.
+            loadAccount(dispatch, provider)
+        })
 
         // Create the token contracts to interact with.
         const myEthAddress = config[chainId]["myEth"].address
@@ -53,7 +58,7 @@ export default function App() {
         await loadTokens(dispatch, provider, [myEthAddress, myDaiAddress])
 
         // Create an exchange contract to interact with.
-        const exchangeAddress = config[chainId]["exchange"].address
+        const exchangeAddress = config[chainId]["myDex"].address
         await loadExchange(dispatch, provider, exchangeAddress)
     }
 
@@ -70,7 +75,7 @@ export default function App() {
     return (
         <div>
 
-            {/* Navbar */}
+            <Navbar />
 
             <main className='exchange grid'>
                 <section className='exchange__section--left grid'>
