@@ -14,8 +14,10 @@ import {
     loadProvider,
     loadNetwork,
     loadAccount,
-    loadToken
+    loadTokens,
+    loadExchange
 } from '../store/interactions'
+import config from "../config.json";
 // import store from "../store/store";
 
 /**
@@ -36,17 +38,23 @@ export default function App() {
      * @returns {Promise<void>}
      */
     const loadBlockchainData = async () => {
-        // Get account(s) from the browser wallet.
-        await loadAccount(dispatch)
-
         // Get a Web3 provider (connection).
         const provider = loadProvider(dispatch)
 
         // Get the chain ID of the connected network.
         const chainId = await loadNetwork(dispatch, provider)
 
-        // Create a token contract to interact with.
-        await loadToken(dispatch, provider, chainId)
+        // Get account(s) from the browser wallet.
+        await loadAccount(dispatch, provider)
+
+        // Create the token contracts to interact with.
+        const myEthAddress = config[chainId]["myEth"].address
+        const myDaiAddress = config[chainId]["myDai"].address
+        await loadTokens(dispatch, provider, [myEthAddress, myDaiAddress])
+
+        // Create an exchange contract to interact with.
+        const exchangeAddress = config[chainId]["exchange"].address
+        await loadExchange(dispatch, provider, exchangeAddress)
     }
 
     /**

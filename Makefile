@@ -21,8 +21,11 @@ test-exchange:
 test-token:
 	@npx hardhat test ./test/Token.js
 
-run:
+run-eth:
 	@npx hardhat node
+
+run-web:
+	@npm run start
 
 deploy:
 	@npx hardhat run --network localhost scripts/deploy.js

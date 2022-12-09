@@ -11,6 +11,13 @@ async function main() {
   const exchangeFeeAccount = accounts[1]
   const exchangeFeePercent = 10
 
+  const MyEth = await hre.ethers.getContractFactory("Token");
+  const myEth = await MyEth.deploy("Colin's Ethereum Coin", 'myEth', tokens(1000000));
+
+  await myEth.deployed();
+
+  console.log(`${await myEth.name()} contract deployed to ${myEth.address}`);
+
   const MyDai = await hre.ethers.getContractFactory("Token");
   const myDai = await MyDai.deploy("Colin's Stable Coin", 'myDai', tokens(1000000));
 

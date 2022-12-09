@@ -11,9 +11,8 @@
 import {ethers} from 'ethers'
 
 // Local application imports.
-import config from "../config.json";
 import TOKEN_ABI from '../abis/Token.json'
-// import EXCHANGE_ABI from '../abis/Exchange.json'
+import EXCHANGE_ABI from '../abis/Exchange.json'
 
 
 /**
@@ -53,33 +52,57 @@ export const loadNetwork = async (dispatch, provider) => {
  * browser's Web3 wallet and dispatch it to our Redux store.
  *
  * @param dispatch The React-Redux dispatch callback function.
+ * @param provider The Web3 ethers provider.
  * @returns {Promise<string>} The wallet's first connected account address.
  */
-export const loadAccount = async (dispatch) => {
+export const loadAccount = async (dispatch, provider) => {
     const accounts = await window["ethereum"].request({method: 'eth_requestAccounts'})
 
     const address = ethers.utils.getAddress(accounts[0])
 
     dispatch({type: 'ACCOUNT_LOADED', address})
 
+    const balanceInWei = await provider.getBalance(address)
+    const balanceInEth = ethers.utils.formatEther(balanceInWei)
+
+    dispatch({type: 'ACCOUNT_ETH_BALANCE_LOADED', balance: balanceInEth})
+
     return address
 }
 
 /**
- * This function will create a Contract object that we can interact with and
+ * This function will TODO object that we can interact with and
  * dispatch it to our Redux store.
  *
  * @param dispatch The React-Redux dispatch callback function.
  * @param provider The Web3 ethers provider.
- * @param chainId The chain ID of the network the provider is connected to.
- * @returns {Promise<string>} The token contracts symbol.
+ * @param address The exchange contract address.
  */
-export const loadToken = async (dispatch, provider, chainId) => {
-    const contract = new ethers.Contract(config[chainId]["myDai"].address, TOKEN_ABI, provider)
+export const loadExchange = async (dispatch, provider, address) => {
+    const contract = new ethers.Contract(address, EXCHANGE_ABI, provider)
 
-    const symbol = await contract.symbol()
+    dispatch({type: 'EXCHANGE_LOADED', contract })
+}
 
-    dispatch({type: 'TOKEN_LOADED', contract, symbol})
+/**
+ * This function will TODO object that we can interact with and
+ * dispatch it to our Redux store.
+ *
+ * @param dispatch The React-Redux dispatch callback function.
+ * @param provider The Web3 ethers provider.
+ * @param addresses An array of token contract addresses.
+ */
+export const loadTokens = async (dispatch, provider, addresses) => {
+    let contract
+    let symbol
 
-    return symbol
+    contract = new ethers.Contract(addresses[0], TOKEN_ABI, provider)
+    symbol = await contract.symbol()
+
+    dispatch({type: 'TOKEN_1_LOADED', contract, symbol })
+
+    contract = new ethers.Contract(addresses[1], TOKEN_ABI, provider)
+    symbol = await contract.symbol()
+
+    dispatch({type: 'TOKEN_2_LOADED', contract, symbol })
 }

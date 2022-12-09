@@ -31,6 +31,7 @@ const provider = (state = {}, action) => {
     }
 }
 
+
 /**
  * This reducer will handle all actions related to our Web3 wallet account.
  */
@@ -42,22 +43,61 @@ const account = (state = {}, action) => {
                 address: action.address
             }
 
+        case 'ACCOUNT_ETH_BALANCE_LOADED':
+            return {
+                ...state,
+                balance: action.balance
+            }
+
         default:
             return state
     }
 }
 
+
 /**
- * This reducer will handle all actions related to any Web3 token contracts.
+ * This reducer will handle all actions related to our Web3 exchange contract.
  */
-const token = (state = {loaded: false, contract: null}, action) => {
+const exchange = (state = {loaded: false}, action) => {
     switch (action.type) {
-        case 'TOKEN_LOADED':
+        case 'EXCHANGE_LOADED':
             return {
                 ...state,
                 loaded: true,
                 contract: action.contract,
-                symbol: action.symbol
+            }
+
+        default:
+            return state
+    }
+}
+
+
+const DEFAULT_TOKENS_STATE = {
+    loaded: false,
+    contracts: [],
+    symbols: []
+}
+
+/**
+ * This reducer will handle all actions related to our Web3 token contracts.
+ */
+const tokens = (state = DEFAULT_TOKENS_STATE, action) => {
+    switch (action.type) {
+        case 'TOKEN_1_LOADED':
+            return {
+                ...state,
+                loaded: true,
+                contracts: [...state.contracts, action.contract],
+                symbols: [...state.symbols, action.symbol]
+            }
+
+        case 'TOKEN_2_LOADED':
+            return {
+                ...state,
+                loaded: true,
+                contracts: [...state.contracts, action.contract],
+                symbols: [...state.symbols, action.symbol]
             }
 
         default:
@@ -69,5 +109,6 @@ const token = (state = {loaded: false, contract: null}, action) => {
 export const reducer = {
     provider,
     account,
-    token,
+    exchange,
+    tokens: tokens,
 }

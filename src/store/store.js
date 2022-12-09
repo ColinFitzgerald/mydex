@@ -30,11 +30,11 @@ export const store = configureStore({
     devTools: process.env.NODE_ENV !== "production",
     middleware: (getDefaultMiddleware) => getDefaultMiddleware({
         serializableCheck: {
-            ignoredActions: ['PROVIDER_LOADED', 'TOKEN_LOADED'],
-            ignoredPaths: ['provider.connection', 'token.contract'],
+            ignoredActions: ['PROVIDER_LOADED', 'TOKEN_1_LOADED', 'TOKEN_2_LOADED', 'EXCHANGE_LOADED'],
+            ignoredPaths: ['provider.connection', 'tokens.contracts', 'exchange.contract'],
         },
         immutableCheck: {
-            ignoredPaths: ['provider.connection', 'token.contract'],
+            ignoredPaths: ['provider.connection', 'tokens.contracts', 'exchange.contract'],
         },
     }),
 })
