@@ -103,8 +103,9 @@ export const loadExchange = async (dispatch, provider, address) => {
  * and save them to our Redux store.  Note that these contracts should
  * expose the ERC-20 token standard interface.
  *
- * TODO Enhance this method so it can load any number of token contracts
- *  as needed.  Currently its limited to just two..
+ * Note that since we can only ever exchange two tokens (a token trading
+ * pair) we only need to support loading two tokens hence only the first
+ * two tokens will be taken from the address parameter.
  *
  * @param dispatch The React-Redux dispatch callback function.
  * @param provider The Web3 ethers provider.
