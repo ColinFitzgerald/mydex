@@ -18,7 +18,15 @@ import eth from '../assets/eth.svg'
 import logo from '../assets/logo.png'
 
 /**
- * This is our main application navigation bar component.
+ * This is our applications main navigation bar component.
+ *
+ * It contains the browser wallet connect feature, display of account address
+ * and Eth balance, redirect to blockchain explorer link and a chain selection
+ * dropdown and finally the applications logo and title.
+ *
+ * TODO The 'react-blockies' package seems very outdated, with bugs and no longer
+ *  maintained, so we should consider finding an alternative or perhaps forking
+ *  and updating the package.
  *
  * @returns {JSX.Element}
  * @constructor
@@ -28,31 +36,36 @@ const Navbar = () => {
     // applications Redux state store.
     const dispatch = useDispatch()
 
-    // TODO
+    // Fetch the Web3 provider (connection) and chain ID from our Redux store.
     const provider = useSelector(state => state.provider.connection)
     const chainId = useSelector(state => state.provider.chainId)
 
-    // TODO
+    // Fetch the connected wallet and its balance from our Redux store.
+    // If no wallet is connected that is fine as these will be null and handled
+    // correctly by this component.
     const accountAddress = useSelector(state => state.account.address)
     const accountBalance = useSelector(state => state.account.balance)
 
     /**
-     *
+     * This callback method is used to load the wallet account when the
+     * user presses the 'Connect Wallet' button.
      *
      * @returns {Promise<void>}
      */
-    const connectHandler = async () => {
+    const connectWalletHandler = async () => {
         // Get account(s) and balance from the browser wallet.
         await loadAccount(dispatch, provider)
     }
 
     /**
+     * This callback method is used to load the new Ethereum chain when the
+     * user selects a new chain from the chain selection component.
      *
-     *
-     * @param event
+     * @param event The event from the selection component (combo box).
      * @returns {Promise<void>}
      */
-    const networkHandler = async (event) => {
+    const switchChainHandler = async (event) => {
+        // Request a chain switch from the browsers Ethereum client.
         await window['ethereum'].request({
             method: 'wallet_switchEthereumChain',
             params: [{ chainId: event.target.value }]
@@ -63,23 +76,24 @@ const Navbar = () => {
     return (
         <div className='exchange__header grid'>
 
-            {/* TODO */}
+            {/* Display the applications logo and title. */}
             <div className='exchange__header--brand flex'>
                 <img src={logo} className='logo' alt='MyDex Logo'/>
                 <h1>MyDex Token Exchange</h1>
             </div>
 
-            {/* TODO */}
+            {/* Display the chain selection dropdown combo box and Ethereum logo. */}
             <div className='exchange__header--networks flex'>
                 <img src={eth} className='eth logo' alt='Eth Logo'/>
 
-                {/* TODO */}
+                {/* The select component with all supported chains and their associated chain ID. */}
                 {chainId && (
                     <select name='networks'
                             id='networks'
                             value={config[chainId] ? `0x${Number(chainId).toString(16)}` : "0"}
-                            onChange={networkHandler}>
-                        <option value='0' disabled>Select Network</option>
+                            onChange={switchChainHandler}>
+                        <option value='0' disabled>Select Chain</option>
+                        {/* TODO Can we fetch these dynamically from the config file?.. */}
                         <option value='0x7a69'>Local Host</option>
                         <option value='0x5'>Goerli Testnet</option>
                         <option value='0xaa36a7'>Sepolia Testnet</option>
@@ -87,28 +101,29 @@ const Navbar = () => {
                 )}
             </div>
 
-            {/* TODO */}
+            {/* Display either the wallet connect button OR the connected wallets address, Eth balance and avatar. */}
             <div className='exchange__header--account flex'>
-                {/* TODO */}
+                {/* If the wallets Eth balance is available... */}
                 {accountBalance ? (
+                    /* ... display it formatted similar to Metamask. */
                     <p><small>Balance: </small>{Number(accountBalance).toFixed(4)} ETH</p>
                 ):(
                     <p/>
                 )}
 
-                {/* TODO */}
+                {/* If the wallet is available and is connected... */}
                 {accountAddress ? (
-                    /* TODO */
+                    /* ...create a link... */
                     <a
-                        /* TODO */
+                        /* ...to the wallet on the selected chain's block explorer... */
                         href={config[chainId] ? `${config[chainId]['blockExplorerUrl']}/address/${accountAddress}` : '#'}
                         target='_blank'
                         rel='noreferrer'
                     >
-                        {/* TODO */}
+                        {/* ...and display its address formatted similar to Metamask... */}
                         {accountAddress.slice(0, 5) + '...' + accountAddress.slice(-4)}
 
-                        {/* TODO */}
+                        {/* ...and display the accounts Blockie avatar. */}
                         <Blockies
                             seed={accountAddress}
                             size={10}
@@ -120,13 +135,14 @@ const Navbar = () => {
                         />
                     </a>
                 ):(
-                    /* TODO */
-                    <button className='button' onClick={connectHandler}>Connect Wallet</button>
+                    /* If the wallet is not available and is not connected then display
+                       the wallet connect button. */
+                    <button className='button' onClick={connectWalletHandler}>Connect Wallet</button>
                 )}
             </div>
         </div>
     )
 }
 
-// Ensure we export the component so it can be used elsewhere in our application.
+// Ensure we export the component, so we can use it elsewhere in our application.
 export default Navbar;

@@ -43,21 +43,29 @@ export default function App() {
         // Get the chain ID of the connected network.
         const chainId = await loadNetwork(dispatch, provider)
 
+        // Ensure that we reload the entire webapp when the chain changes.
+        // This will of course force everything to refresh as needed.
         window["ethereum"].on('chainChanged', () => {
             window.location.reload()
         })
 
+        // Ensure we reload the users wallet account when it changes.
+        // In addition, when the webapp first loads it will display the 'Connect
+        // Wallet' button until the user connects their wallet, triggering this
+        // event.
         window["ethereum"].on('accountsChanged', () => {
             // Get account(s) and balance from the browser wallet.
             loadAccount(dispatch, provider)
         })
 
-        // Create the token contracts to interact with.
+        // Fetch all the token contract addresses we want to interact
+        // with in the webapp and load those contracts.
         const myEthAddress = config[chainId]["myEth"].address
         const myDaiAddress = config[chainId]["myDai"].address
         await loadTokens(dispatch, provider, [myEthAddress, myDaiAddress])
 
-        // Create an exchange contract to interact with.
+        // Fetch all the application contract addresses we want to interact
+        // with in the webapp and load those contracts.
         const exchangeAddress = config[chainId]["myDex"].address
         await loadExchange(dispatch, provider, exchangeAddress)
     }
@@ -74,7 +82,6 @@ export default function App() {
     // Here we create and return the actual HTML for our web application.
     return (
         <div>
-
             <Navbar />
 
             <main className='exchange grid'>
