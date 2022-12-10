@@ -19,6 +19,7 @@ import {
 
 // Local application React components.
 import Navbar from "./Navbar"
+import Markets from "./Markets";
 
 // Local application configuration.
 import config from "../config.json"
@@ -91,7 +92,7 @@ export default function App() {
             <main className='exchange grid'>
                 <section className='exchange__section--left grid'>
 
-                    {/* Markets */}
+                    <Markets />
 
                     {/* Balance */}
 
