@@ -16,8 +16,12 @@ import {
     loadTokens,
     loadExchange, loadAccount
 } from '../store/interactions'
-import config from "../config.json";
-import Navbar from "./Navbar";
+
+// Local application React components.
+import Navbar from "./Navbar"
+
+// Local application configuration.
+import config from "../config.json"
 
 /**
  * This is our main web application.
